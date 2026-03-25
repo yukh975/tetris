@@ -927,6 +927,9 @@
         document.getElementById('t-drop').addEventListener('mousedown', touchAction(softDrop));
         document.getElementById('t-hard').addEventListener('mousedown', touchAction(hardDrop));
 
+        // Expose draw for external controls (grid toggle, theme switch)
+        window.tetrisDraw = draw;
+
         // Initial draw
         draw();
         drawNext();
@@ -1047,6 +1050,7 @@
             window.showGrid = !window.showGrid;
             localStorage.setItem('tetris-grid', window.showGrid);
             gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
+            if (window.tetrisDraw) window.tetrisDraw();
         });
     })();
     </script>
