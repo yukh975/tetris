@@ -463,7 +463,7 @@ Every 10 cleared lines advances the level. Speed increases.
         });
     }
 
-    document.getElementById('rules-btn').addEventListener('click', showRules);
+    document.getElementById('rules-btn-bottom').addEventListener('click', showRules);
     rulesModal.addEventListener('click', e => {
         if (e.target === rulesModal) rulesModal.classList.remove('visible');
     });

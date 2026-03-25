@@ -103,6 +103,7 @@
         #lang-btn { left: 16px; }
         #theme-btn { left: 80px; }
         #grid-btn { left: 144px; }
+        #rules-btn-bottom { left: 192px; }
 
         canvas#board {
             display: block;
@@ -271,21 +272,6 @@
             .controls { display: none; }
         }
 
-        .rules-btn {
-            width: 100%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px 12px;
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            font-family: inherit;
-            text-align: center;
-        }
-        .rules-btn:hover { background: var(--border); }
-
         .rules-modal {
             display: none;
             position: fixed;
@@ -404,7 +390,6 @@
                 <kbd>Esc</kbd> <kbd>P</kbd> <span data-i18n="pause">Пауза</span><br>
                 <kbd>Enter</kbd> <span data-i18n="enter_start">Старт</span>
             </div>
-            <button class="rules-btn" id="rules-btn" data-i18n="rules_btn">Правила</button>
         </div>
 
         <div class="touch-controls">
@@ -433,6 +418,7 @@
     <button class="bottom-btn" id="lang-btn">EN</button>
     <button class="bottom-btn" id="theme-btn">☀️</button>
     <button class="bottom-btn" id="grid-btn">▦</button>
+    <button class="bottom-btn" id="rules-btn-bottom" data-i18n="rules_btn">?</button>
 
     <div class="rules-modal" id="rules-modal">
         <div class="rules-content" id="rules-content">
