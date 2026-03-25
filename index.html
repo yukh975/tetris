@@ -804,6 +804,19 @@
 
         // ── Input ──
         document.addEventListener('keydown', e => {
+            // Enter starts/restarts game from overlays
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                if (!overlayStart.classList.contains('hidden')) {
+                    startGame();
+                } else if (!overlayGameover.classList.contains('hidden')) {
+                    startGame();
+                } else if (!overlayPause.classList.contains('hidden')) {
+                    togglePause();
+                }
+                return;
+            }
+
             if (!running && !paused) return;
 
             if (e.key === 'p' || e.key === 'P' || e.key === 'Escape') {
