@@ -277,7 +277,7 @@
         <div class="game-container">
             <canvas id="board"></canvas>
             <div id="overlay-start" class="overlay">
-                <h1>Тетрис</h1>
+                <h1 data-i18n="title">Тетрис</h1>
                 <p data-i18n="subtitle">Классическая игра</p>
                 <button class="btn" id="btn-start" data-i18n="start">Начать игру</button>
             </div>
@@ -939,6 +939,7 @@
     (() => {
         const i18n = {
             ru: {
+                title: 'Тетрис',
                 subtitle: 'Классическая игра',
                 start: 'Начать игру',
                 paused: 'Пауза',
@@ -960,6 +961,7 @@
                 score_prefix: 'Счёт',
             },
             en: {
+                title: 'Tetris',
                 subtitle: 'Classic block-stacking game',
                 start: 'Start Game',
                 paused: 'Paused',
