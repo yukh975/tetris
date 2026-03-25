@@ -368,6 +368,7 @@
         document.documentElement.setAttribute('data-theme', theme);
         themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
         localStorage.setItem('tetris-theme', theme);
+        window["tetrisDraw"]();
     }
     themeBtn.addEventListener('click', () => applyTheme(currentTheme === 'dark' ? 'light' : 'dark'));
     applyTheme(currentTheme);
