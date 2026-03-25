@@ -13,7 +13,7 @@
             --muted: #8890b5;
             --accent: #58a6ff;
             --accent-hover: #79b8ff;
-            --grid: #2a2e42;
+            --grid: #3a3f58;
             --kbd-bg: #2e3147;
             --overlay-bg: rgba(15, 17, 23, 0.85);
             --block-outline: rgba(0,0,0,0.4);
@@ -102,6 +102,7 @@
 
         #lang-btn { left: 16px; }
         #theme-btn { left: 80px; }
+        #grid-btn { left: 144px; }
 
         canvas#board {
             border: 1px solid var(--border);
@@ -432,6 +433,7 @@
         let dropInterval, dropCounter, lastTime;
         let bag = [];
         let hardDropping = false;
+        window.showGrid = localStorage.getItem('tetris-grid') !== 'false';
         const HARD_DROP_SPEED = 20; // ms per row during animated hard drop
 
         // ── Canvas ──
@@ -656,19 +658,21 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Grid
-            ctx.strokeStyle = getThemeColor('--grid');
-            ctx.lineWidth = 0.5;
-            for (let r = 0; r <= ROWS; r++) {
-                ctx.beginPath();
-                ctx.moveTo(0, r * BLOCK);
-                ctx.lineTo(COLS * BLOCK, r * BLOCK);
-                ctx.stroke();
-            }
-            for (let c = 0; c <= COLS; c++) {
-                ctx.beginPath();
-                ctx.moveTo(c * BLOCK, 0);
-                ctx.lineTo(c * BLOCK, ROWS * BLOCK);
-                ctx.stroke();
+            if (window.showGrid) {
+                ctx.strokeStyle = getThemeColor('--grid');
+                ctx.lineWidth = 0.5;
+                for (let r = 0; r <= ROWS; r++) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, r * BLOCK);
+                    ctx.lineTo(COLS * BLOCK, r * BLOCK);
+                    ctx.stroke();
+                }
+                for (let c = 0; c <= COLS; c++) {
+                    ctx.beginPath();
+                    ctx.moveTo(c * BLOCK, 0);
+                    ctx.lineTo(c * BLOCK, ROWS * BLOCK);
+                    ctx.stroke();
+                }
             }
 
             // Board
@@ -946,6 +950,7 @@
 
     <button class="bottom-btn" id="lang-btn">EN</button>
     <button class="bottom-btn" id="theme-btn">☀️</button>
+    <button class="bottom-btn" id="grid-btn">▦</button>
 
     <script>
     (() => {
@@ -1048,6 +1053,16 @@
         });
 
         applyTheme(currentTheme);
+
+        // ── Grid toggle ──
+        const gridBtn = document.getElementById('grid-btn');
+        gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
+
+        gridBtn.addEventListener('click', () => {
+            window.showGrid = !window.showGrid;
+            localStorage.setItem('tetris-grid', window.showGrid);
+            gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
+        });
     })();
     </script>
 </body>
