@@ -342,6 +342,17 @@
         </div>
     </div>
 
+    <div class="scale-control">
+        <span style="min-width:auto">-</span>
+        <input type="range" id="scale-slider" min="0.5" max="2.5" step="0.05" value="1.3">
+        <span style="min-width:auto">+</span>
+        <span id="scale-value">130%</span>
+    </div>
+
+    <button class="bottom-btn" id="lang-btn">EN</button>
+    <button class="bottom-btn" id="theme-btn">☀️</button>
+    <button class="bottom-btn" id="grid-btn">▦</button>
+
     <script>
     (() => {
         // ── Constants ──
@@ -920,44 +931,9 @@
         draw();
         drawNext();
 
-        // ── Scale control ──
-        const scaleSlider = document.getElementById('scale-slider');
-        const scaleValue = document.getElementById('scale-value');
-        const wrapper = document.querySelector('.game-wrapper');
-
-        function applyScale(val) {
-            val = Math.round(val * 100) / 100;
-            wrapper.style.setProperty('--scale', val);
-            scaleSlider.value = val;
-            scaleValue.textContent = Math.round(val * 100) + '%';
-            localStorage.setItem('tetris-scale', val);
-        }
-
-        function autoScale() {
-            // Calculate scale to fit game height within viewport
-            const naturalHeight = ROWS * BLOCK + 4; // canvas + border
-            const availableHeight = window.innerHeight - 80; // leave room for bottom buttons
-            const fit = availableHeight / naturalHeight;
-            return Math.min(Math.max(fit, 0.5), 2.5);
-        }
-
-        const savedScale = localStorage.getItem('tetris-scale');
-        applyScale(savedScale ? Number(savedScale) : autoScale());
-
-        scaleSlider.addEventListener('input', e => applyScale(Number(e.target.value)));
+        // scale control is in a separate script block below
     })();
     </script>
-
-    <div class="scale-control">
-        <span style="min-width:auto">-</span>
-        <input type="range" id="scale-slider" min="0.5" max="2.5" step="0.05" value="1.3">
-        <span style="min-width:auto">+</span>
-        <span id="scale-value">130%</span>
-    </div>
-
-    <button class="bottom-btn" id="lang-btn">EN</button>
-    <button class="bottom-btn" id="theme-btn">☀️</button>
-    <button class="bottom-btn" id="grid-btn">▦</button>
 
     <script>
     (() => {
@@ -1070,6 +1046,36 @@
             localStorage.setItem('tetris-grid', window.showGrid);
             gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
         });
+    })();
+    </script>
+
+    <script>
+    // ── Scale control (separate script to avoid IIFE scope issues) ──
+    (() => {
+        const scaleSlider = document.getElementById('scale-slider');
+        const scaleValueEl = document.getElementById('scale-value');
+        const gameWrapper = document.querySelector('.game-wrapper');
+        const canvas = document.getElementById('board');
+
+        function applyScale(val) {
+            val = Math.round(val * 100) / 100;
+            gameWrapper.style.transform = 'scale(' + val + ')';
+            scaleSlider.value = val;
+            scaleValueEl.textContent = Math.round(val * 100) + '%';
+            localStorage.setItem('tetris-scale', val);
+        }
+
+        function autoScale() {
+            const naturalHeight = canvas.height + 4;
+            const availableHeight = window.innerHeight - 80;
+            const fit = availableHeight / naturalHeight;
+            return Math.min(Math.max(fit, 0.5), 2.5);
+        }
+
+        const savedScale = localStorage.getItem('tetris-scale');
+        applyScale(savedScale ? Number(savedScale) : autoScale());
+
+        scaleSlider.addEventListener('input', e => applyScale(Number(e.target.value)));
     })();
     </script>
 </body>
