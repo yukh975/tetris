@@ -270,6 +270,85 @@
             .touch-controls { display: flex; flex-direction: column; }
             .controls { display: none; }
         }
+
+        .rules-btn {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: center;
+        }
+        .rules-btn:hover { background: var(--border); }
+
+        .rules-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        .rules-modal.visible { display: flex; }
+
+        .rules-content {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 28px;
+            max-width: 420px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: var(--text);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .rules-content h2 {
+            color: var(--accent);
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .rules-content h3 {
+            color: var(--muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 14px 0 6px;
+        }
+        .rules-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 6px 0;
+        }
+        .rules-content td {
+            padding: 3px 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .rules-content td:last-child { text-align: right; }
+        .rules-content .highlight {
+            color: #f0a000;
+            font-weight: 600;
+        }
+        .rules-close {
+            display: block;
+            margin: 16px auto 0;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+        }
     </style>
 </head>
 <body>
@@ -325,6 +404,7 @@
                 <kbd>Esc</kbd> <kbd>P</kbd> <span data-i18n="pause">Пауза</span><br>
                 <kbd>Enter</kbd> <span data-i18n="enter_start">Старт</span>
             </div>
+            <button class="rules-btn" id="rules-btn" data-i18n="rules_btn">Правила</button>
         </div>
 
         <div class="touch-controls">
@@ -353,6 +433,11 @@
     <button class="bottom-btn" id="lang-btn">EN</button>
     <button class="bottom-btn" id="theme-btn">☀️</button>
     <button class="bottom-btn" id="grid-btn">▦</button>
+
+    <div class="rules-modal" id="rules-modal">
+        <div class="rules-content" id="rules-content">
+        </div>
+    </div>
 
     <script src="tetris.min.js"></script>
 </body>

@@ -43,6 +43,8 @@
     window.showGrid = localStorage.getItem('tetris-grid') !== 'false';
     const HARD_DROP_SPEED = 20;
 
+    function scoreMultiplier() { return window.showGrid ? 0.6 : 1; }
+
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
     canvas.width = COLS * BLOCK;
@@ -142,7 +144,7 @@
         }
         if (cleared > 0) {
             linesCleared += cleared;
-            score += LINE_POINTS[cleared] * level;
+            score += Math.round(LINE_POINTS[cleared] * level * scoreMultiplier());
             level = Math.floor(linesCleared / 10) + 1;
             dropInterval = Math.max(80, 1800 - (level - 1) * 150);
             updateUI();
@@ -232,7 +234,7 @@
     function drop() {
         if (!collides(current, 0, 1)) {
             current.y++;
-            if (hardDropping) { score += 2; updateUI(); }
+            if (hardDropping) { score += Math.round(2 * scoreMultiplier()); updateUI(); }
         } else {
             if (hardDropping) { hardDropping = false; dropInterval = Math.max(80, 1800-(level-1)*150); }
             lock(current);
@@ -243,7 +245,7 @@
     function hardDrop() { hardDropping = true; dropCounter = 0; dropInterval = HARD_DROP_SPEED; }
     function moveLeft() { if (!collides(current, -1, 0)) current.x--; }
     function moveRight() { if (!collides(current, 1, 0)) current.x++; }
-    function softDrop() { if (!collides(current, 0, 1)) { current.y++; score += 1; updateUI(); } }
+    function softDrop() { if (!collides(current, 0, 1)) { current.y++; score += Math.round(1 * scoreMultiplier() * 0.6); updateUI(); } }
 
     function endGame() {
         gameOver = true; running = false;
@@ -326,8 +328,8 @@
 // ── i18n, Theme, Grid ──
 (() => {
     const i18n = {
-        ru: { title:'Тетрис', subtitle:'Классическая игра', start:'Начать игру', paused:'Пауза', resume:'Продолжить', gameover:'Игра окончена', restart:'Играть снова', score:'Очки', level:'Уровень', lines_label:'Линии', next:'Следующая', last_score:'Последний счёт', best_score:'Лучший счёт', move:'Движение', rotate:'Поворот', soft_drop:'Вниз', hard_drop:'Бросить', pause:'Пауза', enter_start:'Старт', score_prefix:'Счёт' },
-        en: { title:'Tetris', subtitle:'Classic block-stacking game', start:'Start Game', paused:'Paused', resume:'Resume', gameover:'Game Over', restart:'Play Again', score:'Score', level:'Level', lines_label:'Lines', next:'Next', last_score:'Last Score', best_score:'Best Score', move:'Move', rotate:'Rotate', soft_drop:'Soft drop', hard_drop:'Hard drop', pause:'Pause', enter_start:'Start', score_prefix:'Score' }
+        ru: { title:'Тетрис', subtitle:'Классическая игра', start:'Начать игру', paused:'Пауза', resume:'Продолжить', gameover:'Игра окончена', restart:'Играть снова', score:'Очки', level:'Уровень', lines_label:'Линии', next:'Следующая', last_score:'Последний счёт', best_score:'Лучший счёт', move:'Движение', rotate:'Поворот', soft_drop:'Вниз', hard_drop:'Бросить', pause:'Пауза', enter_start:'Старт', score_prefix:'Счёт', rules_btn:'Правила' },
+        en: { title:'Tetris', subtitle:'Classic block-stacking game', start:'Start Game', paused:'Paused', resume:'Resume', gameover:'Game Over', restart:'Play Again', score:'Score', level:'Level', lines_label:'Lines', next:'Next', last_score:'Last Score', best_score:'Best Score', move:'Move', rotate:'Rotate', soft_drop:'Soft drop', hard_drop:'Hard drop', pause:'Pause', enter_start:'Start', score_prefix:'Score', rules_btn:'Rules' }
     };
 
     let currentLang = localStorage.getItem('tetris-lang') || 'ru';
@@ -380,6 +382,90 @@
         localStorage.setItem('tetris-grid', window.showGrid);
         gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
         window["tetrisDraw"]();
+    });
+
+    // ── Rules modal ──
+    const rulesHtml = {
+        ru: `<h2>Правила игры</h2>
+<h3>Цель</h3>
+Заполняйте горизонтальные линии блоками. Полная линия исчезает и приносит очки. Игра заканчивается, когда блоки достигают верха поля.
+
+<h3>Управление</h3>
+<table>
+<tr><td>← →</td><td>Движение</td></tr>
+<tr><td>↑</td><td>Поворот</td></tr>
+<tr><td>↓</td><td>Сдвиг вниз (+1 очко)</td></tr>
+<tr><td>Пробел</td><td>Бросить вниз (+2 за клетку)</td></tr>
+<tr><td>Esc / P</td><td>Пауза</td></tr>
+<tr><td>Enter</td><td>Старт / Рестарт</td></tr>
+</table>
+
+<h3>Очки за линии</h3>
+<table>
+<tr><td>1 линия</td><td>100 × уровень</td></tr>
+<tr><td>2 линии</td><td>300 × уровень</td></tr>
+<tr><td>3 линии</td><td>500 × уровень</td></tr>
+<tr><td>4 линии (Тетрис)</td><td>800 × уровень</td></tr>
+</table>
+
+<h3>Уровни</h3>
+Каждые 10 очищенных линий — новый уровень. Скорость увеличивается.
+
+<h3>Сетка</h3>
+<span class="highlight">При включённой сетке (▦) очки начисляются на 40% меньше.</span> Отключите сетку для максимального счёта!
+
+<h3>Прицеливание</h3>
+<span class="highlight">Кнопка ↓ (сдвиг вниз) снижает очки за сдвиг на 40%</span> по сравнению с пробелом (бросить). Используйте пробел для максимальных очков!
+
+<button class="rules-close" id="rules-close">Понятно</button>`,
+        en: `<h2>Game Rules</h2>
+<h3>Goal</h3>
+Fill horizontal lines with blocks. Complete lines disappear and earn points. Game ends when blocks reach the top.
+
+<h3>Controls</h3>
+<table>
+<tr><td>← →</td><td>Move</td></tr>
+<tr><td>↑</td><td>Rotate</td></tr>
+<tr><td>↓</td><td>Soft drop (+1 point)</td></tr>
+<tr><td>Space</td><td>Hard drop (+2 per cell)</td></tr>
+<tr><td>Esc / P</td><td>Pause</td></tr>
+<tr><td>Enter</td><td>Start / Restart</td></tr>
+</table>
+
+<h3>Line Scores</h3>
+<table>
+<tr><td>1 line</td><td>100 × level</td></tr>
+<tr><td>2 lines</td><td>300 × level</td></tr>
+<tr><td>3 lines</td><td>500 × level</td></tr>
+<tr><td>4 lines (Tetris)</td><td>800 × level</td></tr>
+</table>
+
+<h3>Levels</h3>
+Every 10 cleared lines advances the level. Speed increases.
+
+<h3>Grid</h3>
+<span class="highlight">With grid enabled (▦), scores are reduced by 40%.</span> Disable the grid for maximum points!
+
+<h3>Aiming penalty</h3>
+<span class="highlight">Using ↓ (soft drop) gives 40% fewer points per cell</span> compared to Space (hard drop). Use Space for maximum points!
+
+<button class="rules-close" id="rules-close">Got it</button>`
+    };
+
+    const rulesModal = document.getElementById('rules-modal');
+    const rulesContent = document.getElementById('rules-content');
+
+    function showRules() {
+        rulesContent.innerHTML = rulesHtml[currentLang];
+        rulesModal.classList.add('visible');
+        document.getElementById('rules-close').addEventListener('click', () => {
+            rulesModal.classList.remove('visible');
+        });
+    }
+
+    document.getElementById('rules-btn').addEventListener('click', showRules);
+    rulesModal.addEventListener('click', e => {
+        if (e.target === rulesModal) rulesModal.classList.remove('visible');
     });
 })();
 
