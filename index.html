@@ -55,6 +55,24 @@
             font-weight: 600;
         }
 
+        .lang-btn {
+            position: fixed;
+            bottom: 16px;
+            left: 16px;
+            background: #1a1d27;
+            border: 1px solid #2e3147;
+            border-radius: 8px;
+            padding: 8px 14px;
+            z-index: 100;
+            font-size: 13px;
+            font-weight: 600;
+            color: #58a6ff;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .lang-btn:hover { background: #2e3147; }
+
         canvas#board {
             border: 2px solid #2e3147;
             border-radius: 4px;
@@ -225,52 +243,52 @@
         <div class="game-container">
             <canvas id="board"></canvas>
             <div id="overlay-start" class="overlay">
-                <h1>Tetris</h1>
-                <p>Classic block-stacking game</p>
-                <button class="btn" id="btn-start">Start Game</button>
+                <h1>Тетрис</h1>
+                <p data-i18n="subtitle">Классическая игра</p>
+                <button class="btn" id="btn-start" data-i18n="start">Начать игру</button>
             </div>
             <div id="overlay-pause" class="overlay hidden">
-                <h1>Paused</h1>
-                <button class="btn" id="btn-resume">Resume</button>
+                <h1 data-i18n="paused">Пауза</h1>
+                <button class="btn" id="btn-resume" data-i18n="resume">Продолжить</button>
             </div>
             <div id="overlay-gameover" class="overlay hidden">
-                <h1>Game Over</h1>
+                <h1 data-i18n="gameover">Игра окончена</h1>
                 <p class="final-score" id="final-score"></p>
-                <button class="btn" id="btn-restart">Play Again</button>
+                <button class="btn" id="btn-restart" data-i18n="restart">Играть снова</button>
             </div>
         </div>
 
         <div class="sidebar">
             <div class="panel">
-                <h3>Score</h3>
+                <h3 data-i18n="score">Очки</h3>
                 <div class="value" id="score">0</div>
             </div>
             <div class="panel">
-                <h3>Level</h3>
+                <h3 data-i18n="level">Уровень</h3>
                 <div class="value" id="level">1</div>
             </div>
             <div class="panel">
-                <h3>Lines</h3>
+                <h3 data-i18n="lines_label">Линии</h3>
                 <div class="value" id="lines">0</div>
             </div>
             <div class="panel">
-                <h3>Next</h3>
+                <h3 data-i18n="next">Следующая</h3>
                 <canvas id="next" width="100" height="100"></canvas>
             </div>
             <div class="panel">
-                <h3>Last Score</h3>
+                <h3 data-i18n="last_score">Последний счёт</h3>
                 <div class="value small" id="last-score">-</div>
             </div>
             <div class="panel">
-                <h3>Best Score</h3>
+                <h3 data-i18n="best_score">Лучший счёт</h3>
                 <div class="value small best" id="best-score">-</div>
             </div>
-            <div class="controls">
-                <kbd>&larr;</kbd> <kbd>&rarr;</kbd> Move<br>
-                <kbd>&uarr;</kbd> Rotate<br>
-                <kbd>&darr;</kbd> Soft drop<br>
-                <kbd>Space</kbd> Hard drop<br>
-                <kbd>P</kbd> Pause
+            <div class="controls" id="controls-text">
+                <kbd>&larr;</kbd> <kbd>&rarr;</kbd> <span data-i18n="move">Движение</span><br>
+                <kbd>&uarr;</kbd> <span data-i18n="rotate">Поворот</span><br>
+                <kbd>&darr;</kbd> <span data-i18n="soft_drop">Вниз</span><br>
+                <kbd>Space</kbd> <span data-i18n="hard_drop">Бросить</span><br>
+                <kbd>P</kbd> <span data-i18n="pause">Пауза</span>
             </div>
         </div>
 
@@ -284,7 +302,7 @@
                 <div class="touch-btn" id="t-right">&rarr;</div>
             </div>
             <div class="touch-row">
-                <div class="touch-btn" id="t-hard" style="width: 128px;">Hard Drop</div>
+                <div class="touch-btn" id="t-hard" style="width: 128px;" data-i18n="hard_drop">Бросить</div>
             </div>
         </div>
     </div>
@@ -876,5 +894,92 @@
         <span style="min-width:auto">+</span>
         <span id="scale-value">130%</span>
     </div>
+
+    <button class="lang-btn" id="lang-btn">EN</button>
+
+    <script>
+    (() => {
+        const i18n = {
+            ru: {
+                subtitle: 'Классическая игра',
+                start: 'Начать игру',
+                paused: 'Пауза',
+                resume: 'Продолжить',
+                gameover: 'Игра окончена',
+                restart: 'Играть снова',
+                score: 'Очки',
+                level: 'Уровень',
+                lines_label: 'Линии',
+                next: 'Следующая',
+                last_score: 'Последний счёт',
+                best_score: 'Лучший счёт',
+                move: 'Движение',
+                rotate: 'Поворот',
+                soft_drop: 'Вниз',
+                hard_drop: 'Бросить',
+                pause: 'Пауза',
+                score_prefix: 'Счёт',
+            },
+            en: {
+                subtitle: 'Classic block-stacking game',
+                start: 'Start Game',
+                paused: 'Paused',
+                resume: 'Resume',
+                gameover: 'Game Over',
+                restart: 'Play Again',
+                score: 'Score',
+                level: 'Level',
+                lines_label: 'Lines',
+                next: 'Next',
+                last_score: 'Last Score',
+                best_score: 'Best Score',
+                move: 'Move',
+                rotate: 'Rotate',
+                soft_drop: 'Soft drop',
+                hard_drop: 'Hard drop',
+                pause: 'Pause',
+                score_prefix: 'Score',
+            }
+        };
+
+        let currentLang = localStorage.getItem('tetris-lang') || 'ru';
+        const langBtn = document.getElementById('lang-btn');
+
+        function applyLang(lang) {
+            currentLang = lang;
+            const strings = i18n[lang];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (strings[key]) el.textContent = strings[key];
+            });
+            langBtn.textContent = lang === 'ru' ? 'EN' : 'RU';
+            localStorage.setItem('tetris-lang', lang);
+
+            // Update final-score prefix if visible
+            const fs = document.getElementById('final-score');
+            if (fs.textContent) {
+                const num = fs.textContent.replace(/[^\d,.\s]/g, '').trim();
+                fs.textContent = strings.score_prefix + ': ' + num;
+            }
+        }
+
+        // Patch endGame to use localized prefix
+        const origEndGame = window._tetrisEndGame;
+        const fsEl = document.getElementById('final-score');
+        const observer = new MutationObserver(() => {
+            if (fsEl.textContent && fsEl.textContent.startsWith('Score:')) {
+                const num = fsEl.textContent.replace('Score:', '').trim();
+                fsEl.textContent = i18n[currentLang].score_prefix + ': ' + num;
+            }
+        });
+        observer.observe(fsEl, { childList: true, characterData: true, subtree: true });
+
+        langBtn.addEventListener('click', () => {
+            applyLang(currentLang === 'ru' ? 'en' : 'ru');
+        });
+
+        applyLang(currentLang);
+    })();
+    </script>
 </body>
 </html>
