@@ -105,10 +105,8 @@
         #grid-btn { left: 144px; }
 
         canvas#board {
-            border: 1px solid var(--border);
-            border-radius: 4px;
+            display: block;
             background: var(--surface);
-            box-shadow: 0 0 0 1px var(--grid);
         }
 
         .sidebar {
@@ -214,7 +212,9 @@
         .game-container {
             position: relative;
             overflow: hidden;
+            border: 1px solid var(--border);
             border-radius: 4px;
+            box-shadow: 0 0 0 1px var(--grid);
         }
 
         /* Mobile touch controls */
