@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tetris",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "/Users/yukh/git/tetris", "-l", "3456", "--no-clipboard"],
+      "port": 3456
+    }
+  ]
+}

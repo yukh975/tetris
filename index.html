@@ -22,6 +22,37 @@
             display: flex;
             gap: 24px;
             align-items: flex-start;
+            transform-origin: center center;
+            transform: scale(var(--scale, 1.3));
+            transition: transform 0.15s ease;
+        }
+
+        .scale-control {
+            position: fixed;
+            bottom: 16px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #1a1d27;
+            border: 1px solid #2e3147;
+            border-radius: 8px;
+            padding: 8px 14px;
+            z-index: 100;
+            font-size: 12px;
+            color: #8890b5;
+        }
+
+        .scale-control input[type="range"] {
+            width: 100px;
+            accent-color: #58a6ff;
+        }
+
+        .scale-control span {
+            min-width: 36px;
+            text-align: center;
+            color: #e2e4ef;
+            font-weight: 600;
         }
 
         canvas#board {
@@ -815,7 +846,35 @@
         // Initial draw
         draw();
         drawNext();
+
+        // ── Scale control ──
+        const scaleSlider = document.getElementById('scale-slider');
+        const scaleValue = document.getElementById('scale-value');
+        const wrapper = document.querySelector('.game-wrapper');
+
+        function applyScale(val) {
+            wrapper.style.setProperty('--scale', val);
+            scaleValue.textContent = Math.round(val * 100) + '%';
+            localStorage.setItem('tetris-scale', val);
+        }
+
+        const savedScale = localStorage.getItem('tetris-scale');
+        if (savedScale) {
+            scaleSlider.value = savedScale;
+            applyScale(Number(savedScale));
+        } else {
+            applyScale(1.3);
+        }
+
+        scaleSlider.addEventListener('input', e => applyScale(Number(e.target.value)));
     })();
     </script>
+
+    <div class="scale-control">
+        <span style="min-width:auto">-</span>
+        <input type="range" id="scale-slider" min="0.5" max="2.5" step="0.05" value="1.3">
+        <span style="min-width:auto">+</span>
+        <span id="scale-value">130%</span>
+    </div>
 </body>
 </html>
