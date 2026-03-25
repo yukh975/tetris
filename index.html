@@ -5,11 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Tetris</title>
     <style>
+        :root, [data-theme="dark"] {
+            --bg: #0f1117;
+            --surface: #1a1d27;
+            --border: #2e3147;
+            --text: #e2e4ef;
+            --muted: #8890b5;
+            --accent: #58a6ff;
+            --accent-hover: #79b8ff;
+            --grid: #2a2e42;
+            --kbd-bg: #2e3147;
+            --overlay-bg: rgba(15, 17, 23, 0.85);
+            --block-outline: rgba(0,0,0,0.4);
+        }
+
+        [data-theme="light"] {
+            --bg: #e8eaf0;
+            --surface: #ffffff;
+            --border: #c0c4d0;
+            --text: #1a1d2e;
+            --muted: #6b7280;
+            --accent: #2563eb;
+            --accent-hover: #3b82f6;
+            --grid: #d0d3de;
+            --kbd-bg: #d0d4de;
+            --overlay-bg: rgba(232, 234, 240, 0.9);
+            --block-outline: rgba(0,0,0,0.25);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: #0f1117;
-            color: #e2e4ef;
+            background: var(--bg);
+            color: var(--text);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             display: flex;
             justify-content: center;
@@ -34,49 +62,51 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #1a1d27;
-            border: 1px solid #2e3147;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 8px 14px;
             z-index: 100;
             font-size: 12px;
-            color: #8890b5;
+            color: var(--muted);
         }
 
         .scale-control input[type="range"] {
             width: 100px;
-            accent-color: #58a6ff;
+            accent-color: var(--accent);
         }
 
         .scale-control span {
             min-width: 36px;
             text-align: center;
-            color: #e2e4ef;
+            color: var(--text);
             font-weight: 600;
         }
 
-        .lang-btn {
+        .bottom-btn {
             position: fixed;
             bottom: 16px;
-            left: 16px;
-            background: #1a1d27;
-            border: 1px solid #2e3147;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 8px 14px;
             z-index: 100;
             font-size: 13px;
             font-weight: 600;
-            color: #58a6ff;
+            color: var(--accent);
             cursor: pointer;
             font-family: inherit;
         }
 
-        .lang-btn:hover { background: #2e3147; }
+        .bottom-btn:hover { background: var(--border); }
+
+        #lang-btn { left: 16px; }
+        #theme-btn { left: 80px; }
 
         canvas#board {
-            border: 2px solid #2e3147;
+            border: 2px solid var(--border);
             border-radius: 4px;
-            background: #1a1d27;
+            background: var(--surface);
         }
 
         .sidebar {
@@ -87,8 +117,8 @@
         }
 
         .panel {
-            background: #1a1d27;
-            border: 1px solid #2e3147;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
             padding: 12px;
         }
@@ -97,14 +127,14 @@
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #8890b5;
+            color: var(--muted);
             margin-bottom: 8px;
         }
 
         .panel .value {
             font-size: 24px;
             font-weight: 700;
-            color: #58a6ff;
+            color: var(--accent);
         }
 
         canvas#next {
@@ -122,23 +152,23 @@
 
         .controls {
             font-size: 11px;
-            color: #8890b5;
+            color: var(--muted);
             line-height: 1.8;
         }
 
         .controls kbd {
-            background: #2e3147;
+            background: var(--kbd-bg);
             padding: 2px 6px;
             border-radius: 3px;
             font-family: inherit;
-            color: #e2e4ef;
+            color: var(--text);
         }
 
         .overlay {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: rgba(15, 17, 23, 0.85);
+            background: var(--overlay-bg);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -152,22 +182,22 @@
 
         .overlay h1 {
             font-size: 32px;
-            color: #58a6ff;
+            color: var(--accent);
         }
 
         .overlay p {
-            color: #8890b5;
+            color: var(--muted);
             font-size: 14px;
         }
 
         .overlay .final-score {
             font-size: 20px;
-            color: #e2e4ef;
+            color: var(--text);
         }
 
         .btn {
-            background: #58a6ff;
-            color: #0f1117;
+            background: var(--accent);
+            color: #ffffff;
             border: none;
             padding: 10px 28px;
             border-radius: 6px;
@@ -177,7 +207,7 @@
             font-family: inherit;
         }
 
-        .btn:hover { background: #79b8ff; }
+        .btn:hover { background: var(--accent-hover); }
 
         .game-container {
             position: relative;
@@ -194,10 +224,10 @@
         .touch-btn {
             width: 56px;
             height: 56px;
-            background: #1a1d27;
-            border: 1px solid #2e3147;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            color: #e2e4ef;
+            color: var(--text);
             font-size: 22px;
             display: flex;
             align-items: center;
@@ -208,7 +238,7 @@
             touch-action: manipulation;
         }
 
-        .touch-btn:active { background: #2e3147; }
+        .touch-btn:active { background: var(--border); }
 
         .touch-row {
             display: flex;
@@ -288,7 +318,8 @@
                 <kbd>&uarr;</kbd> <span data-i18n="rotate">Поворот</span><br>
                 <kbd>&darr;</kbd> <span data-i18n="soft_drop">Вниз</span><br>
                 <kbd>Space</kbd> <span data-i18n="hard_drop">Бросить</span><br>
-                <kbd>P</kbd> <span data-i18n="pause">Пауза</span>
+                <kbd>Esc</kbd> <kbd>P</kbd> <span data-i18n="pause">Пауза</span><br>
+                <kbd>Enter</kbd> <span data-i18n="enter_start">Старт</span>
             </div>
         </div>
 
@@ -614,13 +645,17 @@
             ctx.globalAlpha = 1;
         }
 
+        function getThemeColor(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
         function draw() {
             // Clear
-            ctx.fillStyle = '#1a1d27';
+            ctx.fillStyle = getThemeColor('--surface');
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Grid
-            ctx.strokeStyle = '#2a2e42';
+            ctx.strokeStyle = getThemeColor('--grid');
             ctx.lineWidth = 0.5;
             for (let r = 0; r <= ROWS; r++) {
                 ctx.beginPath();
@@ -655,7 +690,7 @@
         }
 
         function drawNext() {
-            nextCtx.fillStyle = '#1a1d27';
+            nextCtx.fillStyle = getThemeColor('--surface');
             nextCtx.fillRect(0, 0, 100, 100);
             if (!next) return;
             const shape = PIECES[next][0];
@@ -908,7 +943,8 @@
         <span id="scale-value">130%</span>
     </div>
 
-    <button class="lang-btn" id="lang-btn">EN</button>
+    <button class="bottom-btn" id="lang-btn">EN</button>
+    <button class="bottom-btn" id="theme-btn">☀️</button>
 
     <script>
     (() => {
@@ -931,6 +967,7 @@
                 soft_drop: 'Вниз',
                 hard_drop: 'Бросить',
                 pause: 'Пауза',
+                enter_start: 'Старт',
                 score_prefix: 'Счёт',
             },
             en: {
@@ -951,6 +988,7 @@
                 soft_drop: 'Soft drop',
                 hard_drop: 'Hard drop',
                 pause: 'Pause',
+                enter_start: 'Start',
                 score_prefix: 'Score',
             }
         };
@@ -992,6 +1030,23 @@
         });
 
         applyLang(currentLang);
+
+        // ── Theme toggle ──
+        const themeBtn = document.getElementById('theme-btn');
+        let currentTheme = localStorage.getItem('tetris-theme') || 'dark';
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            document.documentElement.setAttribute('data-theme', theme);
+            themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('tetris-theme', theme);
+        }
+
+        themeBtn.addEventListener('click', () => {
+            applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+        });
+
+        applyTheme(currentTheme);
     })();
     </script>
 </body>
