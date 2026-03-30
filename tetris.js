@@ -611,6 +611,7 @@ Every 10 cleared lines advances the level. Speed increases.
     const scaleSlider = document.getElementById('scale-slider');
     const scaleValueEl = document.getElementById('scale-value');
     const gameWrapper = document.querySelector('.game-wrapper');
+    const gameContainer = document.querySelector('.game-container');
     const canvas = document.getElementById('board');
 
     function isMobile() {
@@ -619,24 +620,26 @@ Every 10 cleared lines advances the level. Speed increases.
 
     function applyScale(val) {
         val = Math.round(val * 100) / 100;
-        gameWrapper.style.transform = 'scale(' + val + ')';
+        if (isMobile()) {
+            // On mobile: CSS handles scaling via width:100% on canvas
+            // Limit container height so everything fits
+            const availHeight = window.innerHeight - 280;
+            gameContainer.style.maxHeight = availHeight + 'px';
+            gameContainer.style.transform = '';
+            gameContainer.style.marginBottom = '';
+            gameWrapper.style.transform = 'none';
+        } else {
+            gameContainer.style.maxHeight = '';
+            gameContainer.style.transform = '';
+            gameContainer.style.marginBottom = '';
+            gameWrapper.style.transform = 'scale(' + val + ')';
+        }
         scaleSlider.value = val;
         scaleValueEl.textContent = Math.round(val * 100) + '%';
         localStorage.setItem('tetris-scale', val);
     }
 
     function autoScale() {
-        if (isMobile()) {
-            // on mobile: fit canvas width to screen width with some padding
-            const availWidth = window.innerWidth - 16;
-            const naturalWidth = canvas.width + 4;
-            const fitW = availWidth / naturalWidth;
-            // also check height: canvas + top bar (~50) + touch controls (~160) + bottom btns (~50) + hints (~20)
-            const availHeight = window.innerHeight - 280;
-            const naturalHeight = canvas.height + 4;
-            const fitH = availHeight / naturalHeight;
-            return Math.min(fitW, fitH, 2.5);
-        }
         const naturalHeight = canvas.height + 4;
         const availableHeight = window.innerHeight - 80;
         const fit = availableHeight / naturalHeight;
@@ -645,13 +648,13 @@ Every 10 cleared lines advances the level. Speed increases.
 
     function mobileAutoScale() {
         if (isMobile()) {
-            applyScale(autoScale());
+            applyScale(1); // CSS handles mobile scaling
         }
     }
 
     const savedScale = localStorage.getItem('tetris-scale');
     if (isMobile()) {
-        applyScale(autoScale());
+        applyScale(1);
     } else {
         applyScale(savedScale ? Number(savedScale) : autoScale());
     }

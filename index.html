@@ -221,19 +221,20 @@
         /* Mobile touch controls */
         .touch-controls {
             display: none;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            padding: 8px 0;
+            padding: 6px 0;
+            width: 100%;
         }
 
         .touch-btn {
-            width: 64px;
-            height: 64px;
+            min-width: 48px;
+            height: 48px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             color: var(--text);
-            font-size: 24px;
+            font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -242,14 +243,18 @@
             -webkit-user-select: none;
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            flex-shrink: 1;
+            padding: 0 12px;
         }
 
         .touch-btn:active { background: var(--accent); color: #fff; }
 
         .touch-row {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
+            max-width: 100vw;
+            padding: 0 16px;
         }
 
         .mobile-top-bar {
@@ -298,12 +303,14 @@
             gap: 8px;
             justify-content: center;
             padding: 4px 0;
+            flex-wrap: wrap;
+            max-width: 100vw;
         }
 
         .mobile-bottom-btns .bottom-btn {
             position: static;
-            font-size: 14px;
-            padding: 10px 16px;
+            font-size: 13px;
+            padding: 8px 12px;
         }
 
         .swipe-hint {
@@ -319,8 +326,19 @@
             .game-wrapper {
                 flex-direction: column;
                 align-items: center;
-                gap: 6px;
-                transform-origin: top center;
+                gap: 4px;
+                transform: none !important;
+                width: 100%;
+                max-width: 100vw;
+            }
+            .game-container {
+                /* CSS scaling instead of transform */
+                width: calc(100vw - 16px);
+                max-width: calc(100vw - 16px);
+            }
+            .game-container canvas#board {
+                width: 100%;
+                height: auto;
             }
             .sidebar { display: none; }
             .controls { display: none; }
@@ -473,8 +491,8 @@
                 <div class="touch-btn" id="t-right">→</div>
             </div>
             <div class="touch-row">
-                <div class="touch-btn" id="t-hard" style="width: 148px;" data-i18n="hard_drop">Бросить</div>
-                <div class="touch-btn" id="t-pause" style="width: 64px;">⏸</div>
+                <div class="touch-btn" id="t-hard" style="flex: 2;" data-i18n="hard_drop">Бросить</div>
+                <div class="touch-btn" id="t-pause" style="flex: 1;">⏸</div>
             </div>
         </div>
 
