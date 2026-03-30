@@ -320,7 +320,116 @@
         document.getElementById('t-hard').addEventListener(evt, touchAction(hardDrop));
     });
 
+    // Pause button for mobile
+    const tPause = document.getElementById('t-pause');
+    if (tPause) {
+        ['touchstart','mousedown'].forEach(evt => {
+            tPause.addEventListener(evt, e => {
+                e.preventDefault();
+                if (running || paused) togglePause();
+            });
+        });
+    }
+
+    // ── Swipe gestures on canvas ──
+    (function() {
+        const el = document.querySelector('.game-container');
+        let startX, startY, startTime, swiped;
+        const SWIPE_MIN = 30;
+        const SWIPE_TIME = 300;
+
+        el.addEventListener('touchstart', function(e) {
+            if (e.touches.length !== 1) return;
+            const t = e.touches[0];
+            startX = t.clientX;
+            startY = t.clientY;
+            startTime = Date.now();
+            swiped = false;
+        }, { passive: true });
+
+        el.addEventListener('touchmove', function(e) {
+            if (!startX || !running || paused || gameOver || hardDropping) return;
+            const t = e.touches[0];
+            const dx = t.clientX - startX;
+            const dy = t.clientY - startY;
+
+            if (!swiped && Math.abs(dx) > SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) {
+                swiped = true;
+                if (dx > 0) moveRight(); else moveLeft();
+                startX = t.clientX;
+                startY = t.clientY;
+                e.preventDefault();
+            } else if (!swiped && dy > SWIPE_MIN && Math.abs(dy) > Math.abs(dx)) {
+                swiped = true;
+                softDrop();
+                startY = t.clientY;
+                startX = t.clientX;
+                e.preventDefault();
+            } else if (!swiped && dy < -SWIPE_MIN && Math.abs(dy) > Math.abs(dx)) {
+                swiped = true;
+                hardDrop();
+                e.preventDefault();
+            }
+
+            // continuous horizontal swipe — reset after each move
+            if (swiped && Math.abs(dx) > SWIPE_MIN && Math.abs(dx) > Math.abs(dy)) {
+                if (dx > 0) moveRight(); else moveLeft();
+                startX = t.clientX;
+                startY = t.clientY;
+                e.preventDefault();
+            }
+            if (swiped && dy > SWIPE_MIN && Math.abs(dy) > Math.abs(dx)) {
+                softDrop();
+                startY = t.clientY;
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        el.addEventListener('touchend', function(e) {
+            if (!running || paused || gameOver || hardDropping) {
+                // tap on overlay — let button clicks through
+                startX = null;
+                return;
+            }
+            const elapsed = Date.now() - startTime;
+            if (!swiped && elapsed < SWIPE_TIME) {
+                // tap = rotate
+                rotate(current, 1);
+            }
+            startX = null;
+        }, { passive: true });
+    })();
+
+    // ── Sync mobile stat elements ──
+    const mScoreEl = document.getElementById('m-score');
+    const mLevelEl = document.getElementById('m-level');
+    const mLinesEl = document.getElementById('m-lines');
+    const mBestEl = document.getElementById('m-best');
+
+    const origUpdateUI = updateUI;
+    updateUI = function() {
+        origUpdateUI();
+        if (mScoreEl) mScoreEl.textContent = score.toLocaleString();
+        if (mLevelEl) mLevelEl.textContent = level;
+        if (mLinesEl) mLinesEl.textContent = linesCleared;
+    };
+
+    function syncMobileBest() {
+        const best = localStorage.getItem('tetris-best-score');
+        if (mBestEl) mBestEl.textContent = best ? Number(best).toLocaleString() : '-';
+    }
+
+    const origSaveScore = saveScore;
+    saveScore = function(s) {
+        origSaveScore(s);
+        syncMobileBest();
+    };
+
+    syncMobileBest();
+
     window.tetrisDraw = draw;
+    window.tetrisStartGame = startGame;
+    window.tetrisTogglePause = togglePause;
     draw();
     drawNext();
 })();
@@ -328,8 +437,8 @@
 // ── i18n, Theme, Grid ──
 (() => {
     const i18n = {
-        ru: { title:'Тетрис', subtitle:'Классическая игра', start:'Начать игру', paused:'Пауза', resume:'Продолжить', gameover:'Игра окончена', restart:'Играть снова', score:'Очки', level:'Уровень', lines_label:'Линии', next:'Следующая', last_score:'Последний счёт', best_score:'Лучший счёт', move:'Движение', rotate:'Поворот', soft_drop:'Вниз', hard_drop:'Бросить', pause:'Пауза', enter_start:'Старт', score_prefix:'Счёт', rules_btn:'Правила' },
-        en: { title:'Tetris', subtitle:'Classic block-stacking game', start:'Start Game', paused:'Paused', resume:'Resume', gameover:'Game Over', restart:'Play Again', score:'Score', level:'Level', lines_label:'Lines', next:'Next', last_score:'Last Score', best_score:'Best Score', move:'Move', rotate:'Rotate', soft_drop:'Soft drop', hard_drop:'Hard drop', pause:'Pause', enter_start:'Start', score_prefix:'Score', rules_btn:'Rules' }
+        ru: { title:'Тетрис', subtitle:'Классическая игра', start:'Начать игру', paused:'Пауза', resume:'Продолжить', gameover:'Игра окончена', restart:'Играть снова', score:'Очки', level:'Уровень', lines_label:'Линии', next:'Следующая', last_score:'Последний счёт', best_score:'Лучший счёт', move:'Движение', rotate:'Поворот', soft_drop:'Вниз', hard_drop:'Бросить', pause:'Пауза', enter_start:'Старт', score_prefix:'Счёт', rules_btn:'Правила', swipe_hint:'Свайп ← → ↓ по полю • Тап = поворот • Свайп ↑ = бросить' },
+        en: { title:'Tetris', subtitle:'Classic block-stacking game', start:'Start Game', paused:'Paused', resume:'Resume', gameover:'Game Over', restart:'Play Again', score:'Score', level:'Level', lines_label:'Lines', next:'Next', last_score:'Last Score', best_score:'Best Score', move:'Move', rotate:'Rotate', soft_drop:'Soft drop', hard_drop:'Hard drop', pause:'Pause', enter_start:'Start', score_prefix:'Score', rules_btn:'Rules', swipe_hint:'Swipe ← → ↓ on field • Tap = rotate • Swipe ↑ = drop' }
     };
 
     let currentLang = localStorage.getItem('tetris-lang') || 'ru';
@@ -360,7 +469,16 @@
     });
     observer.observe(fsEl, { childList: true, characterData: true, subtree: true });
 
-    langBtn.addEventListener('click', () => applyLang(currentLang === 'ru' ? 'en' : 'ru'));
+    const mLangBtn = document.getElementById('m-lang-btn');
+    function toggleLang() { applyLang(currentLang === 'ru' ? 'en' : 'ru'); }
+    langBtn.addEventListener('click', toggleLang);
+    if (mLangBtn) mLangBtn.addEventListener('click', toggleLang);
+
+    const origApplyLang = applyLang;
+    applyLang = function(lang) {
+        origApplyLang(lang);
+        if (mLangBtn) mLangBtn.textContent = lang === 'ru' ? 'EN' : 'RU';
+    };
     applyLang(currentLang);
 
     const themeBtn = document.getElementById('theme-btn');
@@ -372,17 +490,34 @@
         localStorage.setItem('tetris-theme', theme);
         window["tetrisDraw"]();
     }
-    themeBtn.addEventListener('click', () => applyTheme(currentTheme === 'dark' ? 'light' : 'dark'));
+    const mThemeBtn = document.getElementById('m-theme-btn');
+    function toggleTheme() { applyTheme(currentTheme === 'dark' ? 'light' : 'dark'); }
+    themeBtn.addEventListener('click', toggleTheme);
+    if (mThemeBtn) mThemeBtn.addEventListener('click', toggleTheme);
+
+    const origApplyTheme = applyTheme;
+    applyTheme = function(theme) {
+        origApplyTheme(theme);
+        if (mThemeBtn) mThemeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+    };
     applyTheme(currentTheme);
 
     const gridBtn = document.getElementById('grid-btn');
-    gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
-    gridBtn.addEventListener('click', () => {
+    const mGridBtn = document.getElementById('m-grid-btn');
+    function syncGridBtns() {
+        const op = window.showGrid ? 1 : 0.4;
+        gridBtn.style.opacity = op;
+        if (mGridBtn) mGridBtn.style.opacity = op;
+    }
+    syncGridBtns();
+    function toggleGrid() {
         window.showGrid = !window.showGrid;
         localStorage.setItem('tetris-grid', window.showGrid);
-        gridBtn.style.opacity = window.showGrid ? 1 : 0.4;
+        syncGridBtns();
         window["tetrisDraw"]();
-    });
+    }
+    gridBtn.addEventListener('click', toggleGrid);
+    if (mGridBtn) mGridBtn.addEventListener('click', toggleGrid);
 
     // ── Rules modal ──
     const rulesHtml = {
@@ -464,6 +599,8 @@ Every 10 cleared lines advances the level. Speed increases.
     }
 
     document.getElementById('rules-btn-bottom').addEventListener('click', showRules);
+    const mRulesBtn = document.getElementById('m-rules-btn');
+    if (mRulesBtn) mRulesBtn.addEventListener('click', showRules);
     rulesModal.addEventListener('click', e => {
         if (e.target === rulesModal) rulesModal.classList.remove('visible');
     });
@@ -476,6 +613,10 @@ Every 10 cleared lines advances the level. Speed increases.
     const gameWrapper = document.querySelector('.game-wrapper');
     const canvas = document.getElementById('board');
 
+    function isMobile() {
+        return window.matchMedia('(max-width: 700px), (pointer: coarse)').matches;
+    }
+
     function applyScale(val) {
         val = Math.round(val * 100) / 100;
         gameWrapper.style.transform = 'scale(' + val + ')';
@@ -485,18 +626,51 @@ Every 10 cleared lines advances the level. Speed increases.
     }
 
     function autoScale() {
+        if (isMobile()) {
+            // on mobile: fit canvas width to screen width with some padding
+            const availWidth = window.innerWidth - 16;
+            const naturalWidth = canvas.width + 4;
+            const fitW = availWidth / naturalWidth;
+            // also check height: canvas + top bar (~50) + touch controls (~160) + bottom btns (~50) + hints (~20)
+            const availHeight = window.innerHeight - 280;
+            const naturalHeight = canvas.height + 4;
+            const fitH = availHeight / naturalHeight;
+            return Math.min(fitW, fitH, 2.5);
+        }
         const naturalHeight = canvas.height + 4;
         const availableHeight = window.innerHeight - 80;
         const fit = availableHeight / naturalHeight;
         return Math.min(Math.max(fit, 0.5), 2.5);
     }
 
+    function mobileAutoScale() {
+        if (isMobile()) {
+            applyScale(autoScale());
+        }
+    }
+
     const savedScale = localStorage.getItem('tetris-scale');
-    applyScale(savedScale ? Number(savedScale) : autoScale());
+    if (isMobile()) {
+        applyScale(autoScale());
+    } else {
+        applyScale(savedScale ? Number(savedScale) : autoScale());
+    }
+
     scaleSlider.addEventListener('input', e => applyScale(Number(e.target.value)));
 
     document.getElementById('auto-scale-btn').addEventListener('click', () => {
         localStorage.removeItem('tetris-scale');
         applyScale(autoScale());
     });
+
+    // re-fit on orientation change
+    window.addEventListener('orientationchange', () => setTimeout(mobileAutoScale, 200));
+    window.addEventListener('resize', () => { if (isMobile()) mobileAutoScale(); });
 })();
+
+// ── Prevent scroll on touch devices ──
+document.addEventListener('touchmove', function(e) {
+    if (e.target.closest('.game-container') || e.target.closest('.touch-controls')) {
+        e.preventDefault();
+    }
+}, { passive: false });

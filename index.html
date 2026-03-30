@@ -221,19 +221,19 @@
         /* Mobile touch controls */
         .touch-controls {
             display: none;
-            gap: 8px;
-            margin-top: 16px;
+            gap: 10px;
             justify-content: center;
+            padding: 8px 0;
         }
 
         .touch-btn {
-            width: 56px;
-            height: 56px;
+            width: 64px;
+            height: 64px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text);
-            font-size: 22px;
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -241,35 +241,96 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .touch-btn:active { background: var(--border); }
+        .touch-btn:active { background: var(--accent); color: #fff; }
 
         .touch-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
             justify-content: center;
         }
 
-        @media (max-width: 600px) {
+        .mobile-top-bar {
+            display: none;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            padding: 4px 8px;
+            width: 100%;
+        }
+
+        .mobile-top-bar .mini-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px 10px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .mobile-top-bar .mini-panel .label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+        }
+
+        .mobile-top-bar .mini-panel .val {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .mobile-top-bar .mini-panel .val.best {
+            color: #f0a000;
+        }
+
+        .mobile-next-wrap {
+            display: none;
+            justify-content: center;
+            padding: 4px 0;
+        }
+
+        .mobile-bottom-btns {
+            display: none;
+            gap: 8px;
+            justify-content: center;
+            padding: 4px 0;
+        }
+
+        .mobile-bottom-btns .bottom-btn {
+            position: static;
+            font-size: 14px;
+            padding: 10px 16px;
+        }
+
+        .swipe-hint {
+            display: none;
+            text-align: center;
+            font-size: 11px;
+            color: var(--muted);
+            padding: 2px 0;
+        }
+
+        @media (max-width: 700px), (pointer: coarse) {
+            body { align-items: flex-start; padding-top: 8px; }
             .game-wrapper {
                 flex-direction: column;
                 align-items: center;
-                gap: 12px;
+                gap: 6px;
+                transform-origin: top center;
             }
-            .sidebar {
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                min-width: unset;
-            }
+            .sidebar { display: none; }
             .controls { display: none; }
+            .mobile-top-bar { display: flex; }
+            .mobile-next-wrap { display: flex; }
             .touch-controls { display: flex; flex-direction: column; }
-        }
-
-        @media (pointer: coarse) {
-            .touch-controls { display: flex; flex-direction: column; }
-            .controls { display: none; }
+            .mobile-bottom-btns { display: flex; }
+            .swipe-hint { display: block; }
+            .scale-control { display: none; }
+            .bottom-btn:not(.mobile-bottom-btns .bottom-btn) { display: none; }
         }
 
         .rules-modal {
@@ -339,6 +400,14 @@
 </head>
 <body>
     <div class="game-wrapper">
+        <!-- Mobile: compact top stats -->
+        <div class="mobile-top-bar">
+            <div class="mini-panel"><div class="label" data-i18n="score">Очки</div><div class="val" id="m-score">0</div></div>
+            <div class="mini-panel"><div class="label" data-i18n="level">Уровень</div><div class="val" id="m-level">1</div></div>
+            <div class="mini-panel"><div class="label" data-i18n="lines_label">Линии</div><div class="val" id="m-lines">0</div></div>
+            <div class="mini-panel"><div class="label" data-i18n="best_score">Лучший</div><div class="val best" id="m-best">-</div></div>
+        </div>
+
         <div class="game-container">
             <canvas id="board"></canvas>
             <div id="overlay-start" class="overlay">
@@ -392,18 +461,29 @@
             </div>
         </div>
 
+        <!-- Swipe hint -->
+        <div class="swipe-hint" id="swipe-hint" data-i18n="swipe_hint">Свайп ← → ↓ по полю • Тап = поворот • Свайп ↑ = бросить</div>
+
+        <!-- Touch button controls -->
         <div class="touch-controls">
             <div class="touch-row">
-                <div class="touch-btn" id="t-rotate">&uarr;</div>
+                <div class="touch-btn" id="t-left">←</div>
+                <div class="touch-btn" id="t-rotate">↻</div>
+                <div class="touch-btn" id="t-drop">↓</div>
+                <div class="touch-btn" id="t-right">→</div>
             </div>
             <div class="touch-row">
-                <div class="touch-btn" id="t-left">&larr;</div>
-                <div class="touch-btn" id="t-drop">&darr;</div>
-                <div class="touch-btn" id="t-right">&rarr;</div>
+                <div class="touch-btn" id="t-hard" style="width: 148px;" data-i18n="hard_drop">Бросить</div>
+                <div class="touch-btn" id="t-pause" style="width: 64px;">⏸</div>
             </div>
-            <div class="touch-row">
-                <div class="touch-btn" id="t-hard" style="width: 128px;" data-i18n="hard_drop">Бросить</div>
-            </div>
+        </div>
+
+        <!-- Mobile bottom buttons -->
+        <div class="mobile-bottom-btns">
+            <button class="bottom-btn" id="m-lang-btn">EN</button>
+            <button class="bottom-btn" id="m-theme-btn">☀️</button>
+            <button class="bottom-btn" id="m-grid-btn">▦</button>
+            <button class="bottom-btn" id="m-rules-btn" data-i18n="rules_btn">?</button>
         </div>
     </div>
 
