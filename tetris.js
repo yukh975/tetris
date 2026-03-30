@@ -320,16 +320,18 @@
         document.getElementById('t-hard').addEventListener(evt, touchAction(hardDrop));
     });
 
-    // Pause button for mobile
-    const tPause = document.getElementById('t-pause');
-    if (tPause) {
-        ['touchstart','mousedown'].forEach(evt => {
-            tPause.addEventListener(evt, e => {
-                e.preventDefault();
-                if (running || paused) togglePause();
+    // Pause buttons for mobile (touch controls + overlay button)
+    ['t-pause', 'm-pause-btn'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            ['touchstart','mousedown'].forEach(evt => {
+                el.addEventListener(evt, e => {
+                    e.preventDefault();
+                    if (running || paused) togglePause();
+                });
             });
-        });
-    }
+        }
+    });
 
     // ── Swipe gestures on canvas ──
     (function() {
