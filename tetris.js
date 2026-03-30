@@ -234,7 +234,7 @@
     function drop() {
         if (!collides(current, 0, 1)) {
             current.y++;
-            if (hardDropping) { score += Math.round(2 * scoreMultiplier()); updateUI(); }
+            if (hardDropping) { score += Math.max(1, Math.round(2 * scoreMultiplier())); updateUI(); }
         } else {
             if (hardDropping) { hardDropping = false; dropInterval = Math.max(80, 1800-(level-1)*150); }
             lock(current);
@@ -245,7 +245,7 @@
     function hardDrop() { hardDropping = true; dropCounter = 0; dropInterval = HARD_DROP_SPEED; }
     function moveLeft() { if (!collides(current, -1, 0)) current.x--; }
     function moveRight() { if (!collides(current, 1, 0)) current.x++; }
-    function softDrop() { if (!collides(current, 0, 1)) { current.y++; score += Math.round(1 * scoreMultiplier() * 0.6); updateUI(); } }
+    function softDrop() { if (!collides(current, 0, 1)) { current.y++; score += Math.max(1, Math.round(1 * scoreMultiplier())); updateUI(); } }
 
     function endGame() {
         gameOver = true; running = false;

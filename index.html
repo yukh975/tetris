@@ -228,13 +228,13 @@
         }
 
         .touch-btn {
-            min-width: 48px;
-            height: 48px;
+            min-width: 44px;
+            height: 42px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 10px;
             color: var(--text);
-            font-size: 20px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -259,31 +259,31 @@
 
         .mobile-top-bar {
             display: none;
-            gap: 8px;
+            gap: 4px;
             justify-content: center;
             flex-wrap: wrap;
-            padding: 4px 8px;
+            padding: 2px 4px;
             width: 100%;
         }
 
         .mobile-top-bar .mini-panel {
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 4px 10px;
+            border-radius: 6px;
+            padding: 2px 8px;
             text-align: center;
-            min-width: 60px;
+            min-width: 50px;
         }
 
         .mobile-top-bar .mini-panel .label {
-            font-size: 9px;
+            font-size: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: var(--muted);
         }
 
         .mobile-top-bar .mini-panel .val {
-            font-size: 16px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--accent);
         }
@@ -309,16 +309,16 @@
 
         .mobile-bottom-btns .bottom-btn {
             position: static;
-            font-size: 13px;
-            padding: 8px 12px;
+            font-size: 12px;
+            padding: 6px 10px;
         }
 
         .swipe-hint {
             display: none;
             text-align: center;
-            font-size: 11px;
+            font-size: 9px;
             color: var(--muted);
-            padding: 2px 0;
+            padding: 1px 0;
         }
 
         @media (max-width: 700px), (pointer: coarse) {
@@ -333,8 +333,8 @@
             }
             .game-container {
                 /* fit width to screen but cap height so controls are visible */
-                width: min(calc(100vw - 16px), calc((100dvh - 280px) * 22 / 31));
-                max-width: calc(100vw - 16px);
+                width: min(calc(100vw - 8px), calc((100dvh - 195px) * 22 / 31));
+                max-width: calc(100vw - 8px);
             }
             .game-container canvas#board {
                 width: 100%;
